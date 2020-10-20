@@ -1,0 +1,87 @@
+---
+title: "PML"
+author: "maryam"
+date: "11/6/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Practical ML project
+load requiered packages:
+```{r}
+library(caret)
+library(lubridate)
+```
+
+first of all we download the data files:
+```{r}
+download.file("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv",
+              destfile ="C:/Users/DELL/Desktop/Project_PML/pml-training.csv" )
+download.file("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv",
+              destfile ="C:/Users/DELL/Desktop/Project_PML/pml-testing.csv" )
+
+```
+second we read the data files as CSV:
+```{r}
+training<-read.csv("C:/Users/DELL/Desktop/Project_PML/pml-training.csv")
+testing<-read.csv("C:/Users/DELL/Desktop/Project_PML/pml-testing.csv")
+```
+recognizing the data
+```{r}
+summary(training)
+```
+some of the variables are wrongly identefied as characters
+```{r}
+training$cvtd_timestamp=as.Date(training$cvtd_timestamp,format =c("%d/%m/%y"))
+
+for(i in colnames(training[,-c(1,2,5,6,160)])){training[,i]=as.numeric(training[,i])}
+
+```
+
+to look for missing values:
+```{r}
+table(sapply(training,function(x){sum(is.na(x))}))
+```
+
+note that some of the variables are measured once for a group pf observations and it returnes NA
+for any other observation.
+we need to split these two groups of variable and analyze them separately:
+```{r}
+groupvar1<-training[,sapply(training,Negate(anyNA)),drop=F]
+groupvar2<-training[,-groupvar1]
+
+```
+
+
+
+
+
+
+
+split training data into training,validation and testing:
+```{r}
+intrain<-createDataPartition(y=training$classe,p=0.6,list = F)
+train<-training[intrain,]
+vt<-training[-intrain,]
+invalidate<-createDataPartition(y=vt$classe,list=F)
+validate<-vt[invalidate,]
+test<-vt[-invalidate,]
+```
+
+
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
