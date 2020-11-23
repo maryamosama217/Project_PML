@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Practical ML project
-load requiered packages:
+load required packages:
 ```{r}
 library(caret)
 library(lubridate)
