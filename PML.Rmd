@@ -31,7 +31,7 @@ second we read the data files as CSV:
 training<-read.csv("C:/Users/DELL/Desktop/Project_PML/pml-training.csv")
 testing<-read.csv("C:/Users/DELL/Desktop/Project_PML/pml-testing.csv")
 ```
-recognizing the data
+have a look on the data
 ```{r}
 summary(training)
 ```
