@@ -14,6 +14,7 @@ load requiered packages:
 ```{r}
 library(caret)
 library(lubridate)
+library(e1071)
 ```
 
 first of all we download the data files:
@@ -50,27 +51,38 @@ note that some of the variables are measured once for a group pf observations an
 for any other observation.
 we need to split these two groups of variable and analyze them separately:
 ```{r}
-groupvar1<-training[,sapply(training,Negate(anyNA)),drop=F]
-groupvar2<-training[,-groupvar1]
+groupvar1<-training[,sapply(training[,-c(1,2)],Negate(anyNA)),drop=F]
+groupvar1$classe=as.factor(groupvar1$classe);groupvar1$new_window=as.factor(groupvar1$new_window)
+groupvar2<-training[,-as.list(colnames(groupvar1))] #==============> problem 
 
 ```
 
-
-
-
-
-
-
 split training data into training,validation and testing:
 ```{r}
-intrain<-createDataPartition(y=training$classe,p=0.6,list = F)
-train<-training[intrain,]
-vt<-training[-intrain,]
+intrain<-createDataPartition(y=groupvar1$classe,p=0.6,list = F)
+train<-groupvar1[intrain,]
+vt<-groupvar1[-intrain,]
 invalidate<-createDataPartition(y=vt$classe,list=F)
 validate<-vt[invalidate,]
 test<-vt[-invalidate,]
 ```
+look at the correlation matrix:
+```{r}
+M<-cor(groupvar1[,-c(5,6,60)])
+which(M>0.8&M!=1|M<(-0.8),arr.ind = T)
+```
+as we can see, many variables had correlation with each other so, we tend to use PCA:
+```{r}
+prepro<-preProcess(train[,-c(5,6,60)],method = "pca",thresh = 0.95)#====>27 PC needed
+```
+we will start building our model by trying several ML algorithms:
+```{r}
+modelFit1<-train(classe~.,data=train[,-5],method="rpart",na.action=na.exclude)
+```
 
+```{r}
+modelfit2<-train(classe~.,data=train[,-5],method="rf",preProcess="rf",na.action=na.exclude)
+```
 
 
 
