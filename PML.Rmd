@@ -83,7 +83,7 @@ modelFit1$finalModel
 fancyRpartPlot(modelFit1$finalModel)
 modelFit1$results
 pred<-predict(modelFit1,validate);validate$classepred<-pred==validate$classe
-table(pred,validate$classe)
+confusionMatrix(pred,as.factor(validate$classe))
 ```
 2)Bagging
 ```{r}
@@ -92,7 +92,7 @@ modelfit2$finalModel
 fancyRpartPlot(modelFit1$finalModel)
 modelfit2$results
 pred2<-predict(modelfit2,validate);validate$classepred<-pred==validate$classe
-table(pred2,validate$classe)
+confusionMatrix(pred2,as.factor(validate$classe))
 ```
 3)Boosting
 ```{r}
@@ -100,7 +100,7 @@ modelfit3<-train(classe~.,data=train[,-c(3,4)],method="gbm",na.action=na.exclude
 modelfit3$finalModel
 modelfit3$results
 pred3<-predict(modelfit3,validate);validate$classepred<-pred==validate$classe
-table(pred3,validate$classe)
+confusionMatrix(pred3,as.factor(validate$classe))
 ```
 4)Random forest
 ```{r}
@@ -109,12 +109,13 @@ modelfit4$finalModel
 fancyRpartPlot(modelFit1$finalModel)
 modelfit4$results
 pred4<-predict(modelfit4,validate);validate$classepred<-pred==validate$classe
-table(pred4,validate$classe)
+confusionMatrix(pred4,as.factor(validate$classe))
 ```
 as we can see,the Random forest model is the most accurate model on the validation set, so we select this model and apply in on the test sample:
 ```{r}
 predtest<-predict(modelfit4,test);test$classepred<-pred==test$classe
 table(predtest,test$classe)
+confusionMatrix(predtest,as.factor(test$classe))
 
 ```
 now, we will use the same model to estimate the "testing" data
